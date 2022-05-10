@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Produto = require('../model/produto');
+const Seguranca = require('../service/seguranca_service');
 
 // GET / => retornar todos os registros
 router.get('/', async (req, res) => {
@@ -13,17 +14,17 @@ router.get('/:id', async (req, res) => {
 });
 
 // POST / => adicionar um novo registro
-router.post('/', async (req, res) => {
+router.post('/', Seguranca.isAutenticado, Seguranca.hasRole('administrador'), async (req, res) => {
   res.json(await new Produto(req.body).save());
 });
 
 // PUT /:id => alterar UM registro com o id informado
-router.put('/:id', async (req, res) => {
+router.put('/:id', Seguranca.isAutenticado, Seguranca.hasRole('administrador'), async (req, res) => {
   res.json(await Produto.findByIdAndUpdate(req.params.id, req.body));
 });
 
 // DELETE /:id => remover UM registro com o id informado
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', Seguranca.isAutenticado, Seguranca.hasRole('administrador'), async (req, res) => {
   res.json(await Produto.findByIdAndRemove(req.params.id));
 });
 

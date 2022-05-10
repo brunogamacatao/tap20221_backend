@@ -5,9 +5,12 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const BootstrapService = require('./service/bootstrap_service');
 
 // Abrindo a conexão com o banco de dados
-mongoose.connect(process.env.DATABASE_URL);
+mongoose.connect(process.env.DATABASE_URL).then(() => {
+  BootstrapService.boot();
+});
 
 // Cria o servidor web
 const app = express();
@@ -18,6 +21,8 @@ app.use(bodyParser.json()); // 1. aceitar dados no formato JSON
 app.use(bodyParser.urlencoded({ extended: true })); // 2. aceitar dados no format url encoded
 
 // Registrar os controllers
+app.use('/login', require('./controller/login_controller'));
+app.use('/usuarios', require('./controller/usuario_controller'));
 app.use('/produtos', require('./controller/produto_controller'));
 app.use('/carros', require('./controller/carro_controller'));
 
